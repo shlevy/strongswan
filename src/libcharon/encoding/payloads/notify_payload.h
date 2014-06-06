@@ -166,6 +166,8 @@ enum notify_type_t {
 	ME_RESPONSE = 40968,
 	/* RADIUS attribute received/to send to a AAA backend */
 	RADIUS_ATTRIBUTE = 40969,
+	/* IKEv2 fragmentation supported (draft-ieft-ipsecme-ikev2-fragmentation) TODO-FRAG */
+	FRAGMENTATION_SUPPORTED = 40970,
 };
 
 /**
