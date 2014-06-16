@@ -231,9 +231,14 @@ enum payload_type_t {
 	PLV1_NAT_OA_DRAFT_00_03 = 131,
 
 	/**
-	 * IKE fragment (proprietary IKEv1 extension)
+	 * IKEv1 fragment (proprietary IKEv1 extension)
 	 */
 	PLV1_FRAGMENT = 132,
+
+	/**
+	 * Encrypted fragment payload (draft-ieft-ipsecme-ikev2-fragmentation). TODO-FRAG
+	 */
+	PLV2_FRAGMENT = 133,
 
 	/**
 	 * Header has a value of PRIVATE USE space.

@@ -29,6 +29,7 @@
 #include <encoding/payloads/cert_payload.h>
 #include <encoding/payloads/certreq_payload.h>
 #include <encoding/payloads/encrypted_payload.h>
+#include <encoding/payloads/encrypted_fragment_payload.h>
 #include <encoding/payloads/ts_payload.h>
 #include <encoding/payloads/delete_payload.h>
 #include <encoding/payloads/vendor_id_payload.h>
@@ -80,17 +81,19 @@ ENUM_NEXT(payload_type_names, PLV2_SECURITY_ASSOCIATION, PLV2_GSPM, PLV1_NAT_OA,
 #ifdef ME
 ENUM_NEXT(payload_type_names, PLV2_ID_PEER, PLV2_ID_PEER, PLV2_GSPM,
 	"ID_PEER");
-ENUM_NEXT(payload_type_names, PLV1_NAT_D_DRAFT_00_03, PLV1_FRAGMENT, PLV2_ID_PEER,
+ENUM_NEXT(payload_type_names, PLV1_NAT_D_DRAFT_00_03, PLV2_FRAGMENT, PLV2_ID_PEER,
 	"NAT_D_DRAFT_V1",
 	"NAT_OA_DRAFT_V1",
-	"FRAGMENT");
+	"FRAGMENT",
+	"ENCRYPTED_FRAGMENT");
 #else
-ENUM_NEXT(payload_type_names, PLV1_NAT_D_DRAFT_00_03, PLV1_FRAGMENT, PLV2_GSPM,
+ENUM_NEXT(payload_type_names, PLV1_NAT_D_DRAFT_00_03, PLV2_FRAGMENT, PLV2_GSPM,
 	"NAT_D_DRAFT_V1",
 	"NAT_OA_DRAFT_V1",
-	"FRAGMENT");
+	"FRAGMENT",
+	"ENCRYPTED_FRAGMENT");
 #endif /* ME */
-ENUM_NEXT(payload_type_names, PL_HEADER, PLV1_ENCRYPTED, PLV1_FRAGMENT,
+ENUM_NEXT(payload_type_names, PL_HEADER, PLV1_ENCRYPTED, PLV2_FRAGMENT,
 	"HEADER",
 	"PROPOSAL_SUBSTRUCTURE",
 	"PROPOSAL_SUBSTRUCTURE_V1",
@@ -146,17 +149,19 @@ ENUM_NEXT(payload_type_short_names, PLV2_SECURITY_ASSOCIATION, PLV2_GSPM, PLV1_N
 #ifdef ME
 ENUM_NEXT(payload_type_short_names, PLV2_ID_PEER, PLV2_ID_PEER, PLV2_GSPM,
 	"IDp");
-ENUM_NEXT(payload_type_short_names, PLV1_NAT_D_DRAFT_00_03, PLV1_FRAGMENT, PLV2_ID_PEER,
+ENUM_NEXT(payload_type_short_names, PLV1_NAT_D_DRAFT_00_03, PLV2_FRAGMENT, PLV2_ID_PEER,
 	"NAT-D",
 	"NAT-OA",
-	"FRAG");
+	"FRAG",
+	"EF"); /* TODO-FRAG: move. officially its SKF as the Encrypted Payload is SK according to RFC 5996 */
 #else
-ENUM_NEXT(payload_type_short_names, PLV1_NAT_D_DRAFT_00_03, PLV1_FRAGMENT, PLV2_GSPM,
+ENUM_NEXT(payload_type_short_names, PLV1_NAT_D_DRAFT_00_03, PLV2_FRAGMENT, PLV2_GSPM,
 	"NAT-D",
 	"NAT-OA",
-	"FRAG");
+	"FRAG",
+	"EF");
 #endif /* ME */
-ENUM_NEXT(payload_type_short_names, PL_HEADER, PLV1_ENCRYPTED, PLV1_FRAGMENT,
+ENUM_NEXT(payload_type_short_names, PL_HEADER, PLV1_ENCRYPTED, PLV2_FRAGMENT,
 	"HDR",
 	"PROP",
 	"PROP",
@@ -247,6 +252,8 @@ payload_t *payload_create(payload_type_t type)
 			return (payload_t*)encrypted_payload_create(type);
 		case PLV1_FRAGMENT:
 			return (payload_t*)fragment_payload_create();
+		case PLV2_FRAGMENT:
+			return (payload_t*)encrypted_fragment_payload_create();
 		default:
 			return (payload_t*)unknown_payload_create(type);
 	}
@@ -281,6 +288,10 @@ bool payload_is_known(payload_type_t type)
 #endif
 	if (type >= PLV1_NAT_D_DRAFT_00_03 && type <= PLV1_FRAGMENT)
 	{
+		return TRUE;
+	}
+	if (type == PLV2_FRAGMENT)
+	{	/* TODO-FRAG: integrate above once ID known */
 		return TRUE;
 	}
 	return FALSE;
