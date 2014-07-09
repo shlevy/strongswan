@@ -21,3 +21,22 @@ libstrongswan_kernel_netlink_la_SOURCES = \
 	kernel_netlink_shared.h kernel_netlink_shared.c
 
 libstrongswan_kernel_netlink_la_LDFLAGS = -module -avoid-version
+
+
+TESTS = kernel_netlink_tests
+
+check_PROGRAMS = $(TESTS)
+
+kernel_netlink_tests_SOURCES = \
+	kernel_netlink_tests.h kernel_netlink_tests.c \
+	kernel_netlink_shared.c
+
+kernel_netlink_tests_CFLAGS = \
+	-I$(top_srcdir)/src/libstrongswan \
+	-I$(top_srcdir)/src/libstrongswan/tests \
+	@COVERAGE_CFLAGS@
+
+kernel_netlink_tests_LDFLAGS = @COVERAGE_LDFLAGS@
+kernel_netlink_tests_LDADD = \
+	$(top_builddir)/src/libstrongswan/libstrongswan.la \
+	$(top_builddir)/src/libstrongswan/tests/libtest.la
