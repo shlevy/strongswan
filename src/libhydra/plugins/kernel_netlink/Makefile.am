@@ -29,6 +29,7 @@ check_PROGRAMS = $(TESTS)
 
 kernel_netlink_tests_SOURCES = \
 	kernel_netlink_tests.h kernel_netlink_tests.c \
+	suites/test_socket.c \
 	kernel_netlink_shared.c
 
 kernel_netlink_tests_CFLAGS = \
