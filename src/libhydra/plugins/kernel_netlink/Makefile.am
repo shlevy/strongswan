@@ -35,6 +35,7 @@ kernel_netlink_tests_SOURCES = \
 kernel_netlink_tests_CFLAGS = \
 	-I$(top_srcdir)/src/libstrongswan \
 	-I$(top_srcdir)/src/libstrongswan/tests \
+	-DNETLINK_MSG_LOSS_HOOK=netlink_msg_loss \
 	@COVERAGE_CFLAGS@
 
 kernel_netlink_tests_LDFLAGS = @COVERAGE_LDFLAGS@
