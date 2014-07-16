@@ -2155,9 +2155,9 @@ METHOD(kernel_net_t, add_route, status_t,
 
 	this->routes_lock->lock(this->routes_lock);
 	found = this->routes->get(this->routes, &route);
+	this->routes_lock->unlock(this->routes_lock);
 	if (found)
 	{
-		this->routes_lock->unlock(this->routes_lock);
 		return ALREADY_DONE;
 	}
 	status = manage_srcroute(this, RTM_NEWROUTE, NLM_F_CREATE | NLM_F_EXCL,
@@ -2165,9 +2165,10 @@ METHOD(kernel_net_t, add_route, status_t,
 	if (status == SUCCESS)
 	{
 		found = route_entry_clone(&route);
+		this->routes_lock->lock(this->routes_lock);
 		this->routes->put(this->routes, found, found);
+		this->routes_lock->unlock(this->routes_lock);
 	}
-	this->routes_lock->unlock(this->routes_lock);
 	return status;
 }
 
@@ -2185,17 +2186,15 @@ METHOD(kernel_net_t, del_route, status_t,
 	};
 
 	this->routes_lock->lock(this->routes_lock);
-	found = this->routes->get(this->routes, &route);
+	found = this->routes->remove(this->routes, &route);
+	this->routes_lock->unlock(this->routes_lock);
 	if (!found)
 	{
-		this->routes_lock->unlock(this->routes_lock);
 		return NOT_FOUND;
 	}
-	this->routes->remove(this->routes, found);
 	route_entry_destroy(found);
 	status = manage_srcroute(this, RTM_DELROUTE, 0, dst_net, prefixlen,
 							 gateway, src_ip, if_name);
-	this->routes_lock->unlock(this->routes_lock);
 	return status;
 }
 
