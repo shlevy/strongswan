@@ -316,6 +316,11 @@ struct private_kernel_netlink_ipsec_t {
 	bool policy_history;
 
 	/**
+	 * Wheter to always use UPDATE to install policies
+	 */
+	bool policy_update;
+
+	/**
 	 * Installed port based IKE bypass policies, as bypass_t
 	 */
 	array_t *bypass;
@@ -2310,6 +2315,11 @@ METHOD(kernel_ipsec_t, add_policy, status_t,
 		return SUCCESS;
 	}
 
+	if (this->policy_update)
+	{
+		found = TRUE;
+	}
+
 	DBG2(DBG_KNL, "%s policy %R === %R %N  (mark %u/0x%08x)",
 				   found ? "updating" : "adding", src_ts, dst_ts,
 				   policy_dir_names, direction, mark.value, mark.mask);
@@ -2838,6 +2848,8 @@ kernel_netlink_ipsec_t *kernel_netlink_ipsec_create()
 		.bypass = array_create(sizeof(bypass_t), 0),
 		.mutex = mutex_create(MUTEX_TYPE_DEFAULT),
 		.policy_history = TRUE,
+		.policy_update = lib->settings->get_bool(lib->settings,
+					"%s.plugins.kernel-netlink.policy_update", FALSE, lib->ns),
 		.install_routes = lib->settings->get_bool(lib->settings,
 							"%s.install_routes", TRUE, lib->ns),
 	);
